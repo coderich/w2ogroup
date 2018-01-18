@@ -1,0 +1,27 @@
+.pointer, .btn {
+    cursor: pointer;
+}
+.google-maps {
+    position: relative;
+    min-width: 300px;
+    min-height: 400px;
+}
+.google-maps iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+.google-maps-item {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+.google-maps-item iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}

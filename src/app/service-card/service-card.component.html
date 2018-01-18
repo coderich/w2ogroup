@@ -1,0 +1,6 @@
+<div class="card">
+    <div class="card-body" [ngClass]="{open:'bg-success-light', closed:'bg-danger-light'}[service.status]">
+        <div *ngIf="service.address.length"><a class="text-info pointer" [href]="mapUrl" target="_blank"><strong>{{ service.address }} &rsaquo;</strong></a></div>
+        <div>{{ service.description }}</div>
+    </div>
+</div>

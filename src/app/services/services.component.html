@@ -1,0 +1,42 @@
+<div class="text-center nice-copy-story">
+    <p class="nice-copy-story">Welcome!</p>
+    <p>Fill in your address below to find public service listings in your area.</p>
+</div>
+<div style="position:relative">
+    <div class="form-group input-group">
+        <input [(ngModel)]="query" (ngModelChange)="autocomplete()" class="form-control" placeholder="Enter your address">
+        <span class="input-group-btn">
+            <button class="btn btn-info" [disabled]="query.length==0" (click)="queryServices()">LOOKUP</button>
+        </span>
+    </div>
+    <div *ngIf="geoStatus" class="form-group" (click)="useCurrentLocation()">
+        <span class="fa fa-crosshairs"></span>
+        <a class="text-info pointer">Use my current location</a>
+    </div>
+    <ul *ngIf="places$" class="list-group bg-white" style="position:absolute; top:40px; left:0; right:0; z-index:1000">
+        <li class="list-group-item pointer" *ngFor="let place of places$|async" (click)="usePlace(place)"><a>{{ place.description }}</a></li>
+    </ul>
+</div>
+
+<div *ngIf="loading" class="text-center">
+    <span class="fa fa-4x fa-spinner fa-spin"></span>
+</div>
+
+<div *ngIf="serviceKeys && !loading" class="pt-20">
+    <p class="nice-copy text-center"><span class="fa fa-info-circle"></span> <strong>{{ services.length }}</strong> listings under <strong>{{ serviceKeys.length }}</strong> categories:</p>
+    <div id="accordion">
+        <div class="card form-group" *ngFor="let key of serviceKeys">
+            <div class="card-header pointer" data-toggle="collapse" [attr.data-target]="'#' + key">
+                <h5 class="mb-0 d-inline-block text-nowrap"><span class="fa fa-caret-right"></span> {{ serviceMap[key].name }}</h5>
+                ( {{ serviceMap[key].open }} <span class="text-success">open</span>, {{ serviceMap[key].closed }} <span class="text-danger">closed</span> )
+            </div>
+            <div id="{{ key }}" class="collapse" data-parent="#accordion">
+                <div class="card-body">
+                    <div class="form-group" *ngFor="let service of serviceMap[key].items">
+                        <app-service-card [service]="service"></app-service-card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
