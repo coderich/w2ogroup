@@ -4,6 +4,7 @@ const request = require('request');
 
 const key = 'AIzaSyCsHA8U57fDKKOhw54Kdh8Io5CaeSdDvNs';
 
+// Get public service listings
 router.get('/service', (req, res) => {
     var lat = req.param('lat');
     var lon = req.param('lon');
@@ -28,6 +29,7 @@ router.get('/service', (req, res) => {
     });
 });
 
+// Google autocomplete
 router.get('/autocomplete', (req, res) => {
     var q = req.param('q');
     var url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=' + key + '&input=' + q;
@@ -42,12 +44,12 @@ router.get('/autocomplete', (req, res) => {
     });
 });
 
+// Google geocode
 router.get('/geocode', (req, res) => {
     var q = req.param('q');
     var url = 'https://maps.googleapis.com/maps/api/geocode/json?key=' + key + '&address=' + q;
 
     request.get({url:url, json:true}, function(err, results) {
-        console.log(results.body);
         var geom = results.body.results[0].geometry || {};
         var location = geom.location || {};
         res.send({latitude:location.lat, longitude:location.lng});

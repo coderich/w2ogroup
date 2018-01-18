@@ -14,20 +14,17 @@ import { GeoService } from '../geo.service';
 
 export class ServicesComponent implements OnInit {
     private services:Service[];
-    private serviceMap;
-    private serviceKeys;
-    private geoStatus;
-    private latLng;
-    private query = '';
+    private serviceMap, serviceKeys, geoStatus, latLng;
     private searchTerms = new Subject<string>;
     private places$:Observable<any>;
     private loading = false;
+    private query = '';
 
     constructor(private seeClickFixService:SeeClickFixService, private geoService:GeoService) {
-
     }
 
     ngOnInit() {
+        // Store latLng if user ever wants to use current position
         if (this.geoService.isBrowserEnabled()) {
             this.geoService.getCurrentPosition().subscribe(obj => {
                 this.latLng = obj;
@@ -35,19 +32,47 @@ export class ServicesComponent implements OnInit {
             });
         }
 
+        // places$ is an Observable using for input autocomplete
+        // https://angular.io/tutorial/toh-pt6#!#observables
         this.places$ = this.searchTerms.pipe(
-            // wait 300ms after each keystroke before considering the term
             debounceTime(300),
-
-            // ignore new term if same as previous term
             distinctUntilChanged(),
-
-            // switch to new search observable each time the term changes
             switchMap((term:string) => this.geoService.autocomplete(term))
         );
     }
 
-    setServices(data) {
+    /**
+     * Take user input, geocode, then find by lat lng
+     */
+    findByQuery():void {
+        if (!this.query || !this.query.length) return;
+
+        this.geoService.geocodeAddress(this.query).subscribe(obj => {
+            this.findByLatLng(obj.latitude, obj.longitude);
+        });
+
+        this.query = '';
+    }
+
+    /**
+     * Request data from the seeClickFixService service.
+     */
+    findByLatLng(lat, lng):void {
+        this.loading = true;
+        this.searchTerms.next([]);
+
+        this.seeClickFixService.findByLatLng(lat, lng).subscribe(services => {
+            this.transformResponse(services);
+            this.loading = false;
+        });
+    }
+
+    /**
+     * Transforms response from the API into something more "interesting" for UI consumption:
+     *    - Groups by service code
+     *    - Sorts by open listings on both the group level and individual listings
+     */
+    transformResponse(data) {
         var self = this;
         this.services = data;
 
@@ -58,6 +83,7 @@ export class ServicesComponent implements OnInit {
             return 0;
         });
 
+        // Create a map, keyed by code, that groups listings
         this.serviceMap = data.reduce(function(prev, curr) {
             prev[curr.code] = prev[curr.code] || {name:curr.name, closed:0, open:0, items:[]};
 
@@ -68,7 +94,7 @@ export class ServicesComponent implements OnInit {
             return prev;
         }, {});
 
-        // Sort by open items
+        // Keys are sorted by those having the most items open
         this.serviceKeys = Object.keys(this.serviceMap).sort(function(a, b) {
             return self.serviceMap[b].open - self.serviceMap[a].open;
         });
@@ -79,43 +105,11 @@ export class ServicesComponent implements OnInit {
     }
 
     useCurrentLocation():void {
-        this.query = this.latLng.latitude + ',' + this.latLng.longitude;
+        this.findByLatLng(this.latLng.latitude, this.latLng.longitude);
     }
 
     usePlace(place):void {
         this.query = place.description;
         this.searchTerms.next([]);
-    }
-
-    queryServices():void {
-        if (!this.query || !this.query.length) return;
-
-        var arr = this.query.split(',');
-
-        if (arr.length == 2) {
-            try {
-                var lat = parseFloat(arr[0]);
-                var lon = parseFloat(arr[1]);
-                this.getServices(lat, lon);
-            } catch (e) {
-                // Probably not lat,lng
-            }
-        } else {
-            this.geoService.geocodeAddress(this.query).subscribe(obj => {
-                this.getServices(obj.latitude, obj.longitude);
-            });
-        }
-
-        this.query = '';
-    }
-
-    getServices(lat, lon):void {
-        this.loading = true;
-
-        this.seeClickFixService.getServices(lat, lon).subscribe(services => {
-            this.setServices(services);
-            this.searchTerms.next([]);
-            this.loading = false;
-        });
     }
 }

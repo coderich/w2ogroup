@@ -6,14 +6,14 @@
     <div class="form-group input-group">
         <input [(ngModel)]="query" (ngModelChange)="autocomplete()" class="form-control" placeholder="Enter your address">
         <span class="input-group-btn">
-            <button class="btn btn-info" [disabled]="query.length==0" (click)="queryServices()">LOOKUP</button>
+            <button class="btn btn-info" [disabled]="query.length==0" (click)="findByQuery()">LOOKUP</button>
         </span>
     </div>
     <div *ngIf="geoStatus" class="form-group" (click)="useCurrentLocation()">
         <span class="fa fa-crosshairs"></span>
-        <a class="text-info pointer">Use my current location</a>
+        <a class="text-info pointer">Search by current location</a>
     </div>
-    <ul *ngIf="places$" class="list-group bg-white" style="position:absolute; top:40px; left:0; right:0; z-index:1000">
+    <ul *ngIf="places$ && !loading" class="list-group bg-white" style="position:absolute; top:40px; left:0; right:0; z-index:1000">
         <li class="list-group-item pointer" *ngFor="let place of places$|async" (click)="usePlace(place)"><a>{{ place.description }}</a></li>
     </ul>
 </div>
