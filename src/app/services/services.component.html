@@ -3,12 +3,12 @@
     <p>Fill in your address below to find public service listings in your area.</p>
 </div>
 <div style="position:relative">
-    <div class="form-group input-group">
-        <input [(ngModel)]="query" (ngModelChange)="autocomplete()" class="form-control" placeholder="Enter your address">
+    <form class="form-group input-group" (ngSubmit)="findByQuery()">
+        <input [(ngModel)]="query" (ngModelChange)="autocomplete()" [ngModelOptions]="{standalone:true}" class="form-control" placeholder="Enter your address">
         <span class="input-group-btn">
-            <button class="btn btn-info" [disabled]="query.length==0" (click)="findByQuery()">LOOKUP</button>
+            <button class="btn btn-info" [disabled]="query.length==0">LOOKUP</button>
         </span>
-    </div>
+    </form>
     <div *ngIf="geoStatus" class="form-group" (click)="useCurrentLocation()">
         <span class="fa fa-crosshairs"></span>
         <a class="text-info pointer">Search by current location</a>

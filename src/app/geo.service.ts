@@ -4,14 +4,11 @@ import { of } from 'rxjs/observable/of';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 
-declare var google:any;
 
 @Injectable()
 export class GeoService {
-    private geocoder;
 
     constructor(private http:HttpClient) {
-        this.geocoder = new google.maps.Geocoder();
     }
 
     isBrowserEnabled() {
