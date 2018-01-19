@@ -116,5 +116,6 @@ export class ServicesComponent implements OnInit {
     usePlace(place):void {
         this.query = place.description;
         this.searchTerms.next('');
+        // this.findByQuery(); // Could do this too
     }
 }

@@ -29,13 +29,13 @@ export class GeoService {
     }
 
     geocodeAddress(address):Observable<any> {
-        return this.http.get<any[]>('http://localhost:3000/geocode?q=' + address).pipe(
+        return this.http.get<any[]>('http://localhost:3000/api/geocode?q=' + address).pipe(
             catchError(this.handleError('geo.geocodeAddress', {latitude:0, longitude:0}))
         );
     }
 
     autocomplete(query) {
-        return this.http.get<any[]>('http://localhost:3000/autocomplete?q=' + query).pipe(
+        return this.http.get<any[]>('http://localhost:3000/api/autocomplete?q=' + query).pipe(
             catchError(this.handleError('geo.autocomplete', []))
         );
     }

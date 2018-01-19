@@ -11,7 +11,7 @@ export class SeeClickFixService {
     }
 
     findByLatLng(lat, lon):Observable<Service[]> {
-        return this.http.get<Service[]>('http://localhost:3000/service?lat=' + lat + '&lon=' + lon).pipe(
+        return this.http.get<Service[]>('http://localhost:3000/api/service?lat=' + lat + '&lon=' + lon).pipe(
             catchError(this.handleError('scf.findByLatLng', []))
         );
     }
