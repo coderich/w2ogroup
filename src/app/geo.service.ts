@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
+
+declare var google:any;
 
 @Injectable()
 export class GeoService {
@@ -26,10 +29,21 @@ export class GeoService {
     }
 
     geocodeAddress(address):Observable<any> {
-        return this.http.get<any[]>('http://localhost:3000/geocode?q=' + address);
+        return this.http.get<any[]>('http://localhost:3000/geocode?q=' + address).pipe(
+            catchError(this.handleError('geo.geocodeAddress', {latitude:0, longitude:0}))
+        );
     }
 
     autocomplete(query) {
-        return this.http.get<any[]>('http://localhost:3000/autocomplete?q=' + query);
+        return this.http.get<any[]>('http://localhost:3000/autocomplete?q=' + query).pipe(
+            catchError(this.handleError('geo.autocomplete', []))
+        );
+    }
+
+    private handleError<T>(operation='operation', result?:T) {
+        return (error:any):Observable<T> => {
+            console.error(error);
+            return of(result as T);
+        };
     }
 }

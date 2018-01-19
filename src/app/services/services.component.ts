@@ -14,8 +14,11 @@ import { GeoService } from '../geo.service';
 
 export class ServicesComponent implements OnInit {
     private services:Service[];
-    private serviceMap, serviceKeys, geoStatus, latLng;
-    private searchTerms = new Subject<string>;
+    private serviceMap;
+    private serviceKeys;
+    private geoStatus;
+    private latLng;
+    private searchTerms = new Subject<string>();
     private places$:Observable<any>;
     private loading = false;
     private query = '';
@@ -52,6 +55,8 @@ export class ServicesComponent implements OnInit {
         });
 
         this.query = '';
+        this.loading = true;
+        this.searchTerms.next('');
     }
 
     /**
@@ -59,7 +64,7 @@ export class ServicesComponent implements OnInit {
      */
     findByLatLng(lat, lng):void {
         this.loading = true;
-        this.searchTerms.next([]);
+        this.searchTerms.next('');
 
         this.seeClickFixService.findByLatLng(lat, lng).subscribe(services => {
             this.transformResponse(services);
@@ -110,6 +115,6 @@ export class ServicesComponent implements OnInit {
 
     usePlace(place):void {
         this.query = place.description;
-        this.searchTerms.next([]);
+        this.searchTerms.next('');
     }
 }
